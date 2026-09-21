@@ -230,6 +230,198 @@
                     </div>
                 </div>
 
+                <!-- Ringkasan Pakan Dashboard -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                                <i class="fa-solid fa-fish text-blue-900"></i>
+                                Ringkasan Pakan
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-1">
+                                Informasi pakan kolam saat ini.
+                            </p>
+                        </div>
+
+                        <a href="{{ route('pakan') }}"
+                            class="text-xs font-semibold text-blue-900 hover:text-blue-700 flex items-center gap-1">
+                            Lihat Detail
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                        <!-- Stok Pakan -->
+                        <div class="bg-slate-50/80 border border-slate-200/60 rounded-xl p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                    Stok Pakan
+                                </span>
+                                <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-900 flex items-center justify-center">
+                                    <i class="fa-solid fa-boxes-stacked text-sm"></i>
+                                </div>
+                            </div>
+
+                            <p class="text-3xl font-extrabold text-slate-800 tracking-tight">
+                                78<span class="text-lg text-slate-500">%</span>
+                            </p>
+
+                            <p class="text-xs text-slate-500 mt-1">
+                                Sisa pakan ± 7.8 kg
+                            </p>
+
+                            <div class="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-xs font-medium">
+                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                Stok Cukup
+                            </div>
+                        </div>
+
+                        <!-- Kebutuhan Pakan -->
+                        <div class="bg-slate-50/80 border border-slate-200/60 rounded-xl p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                    Pakan Hari Ini
+                                </span>
+                                <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-900 flex items-center justify-center">
+                                    <i class="fa-solid fa-scale-balanced text-sm"></i>
+                                </div>
+                            </div>
+
+                            <p class="text-3xl font-extrabold text-slate-800 tracking-tight">
+                                2.25 <span class="text-lg text-slate-500">kg</span>
+                            </p>
+
+                            <p class="text-xs text-slate-500 mt-1">
+                                Total kebutuhan pakan harian
+                            </p>
+
+                            <div class="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200/60 text-xs font-medium">
+                                <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span>
+                                3× Pemberian
+                            </div>
+                        </div>
+
+                        <!-- Status Feeder -->
+                        <div class="bg-slate-50/80 border border-slate-200/60 rounded-xl p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                    Status Feeder
+                                </span>
+                                <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-900 flex items-center justify-center">
+                                    <i class="fa-solid fa-gears text-sm"></i>
+                                </div>
+                            </div>
+
+                            <p class="text-2xl font-extrabold text-slate-800 tracking-tight">
+                                Otomatis
+                            </p>
+
+                            <p class="text-xs text-slate-500 mt-1">
+                                Sistem pemberian pakan aktif
+                            </p>
+
+                            <div class="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-xs font-medium">
+                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                Feeder Aktif
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Jadwal Pakan Hari Ini -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                                <i class="fa-regular fa-clock text-blue-900"></i>
+                                Jadwal Pakan Hari Ini
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-1">
+                                Ringkasan jadwal pemberian pakan.
+                            </p>
+                        </div>
+
+                        <a href="{{ route('pakan') }}"
+                            class="text-xs font-semibold text-blue-900 hover:text-blue-700 flex items-center gap-1">
+                            Kelola Pakan
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-600">
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-semibold border-b border-slate-100">
+                                <tr>
+                                    <th class="py-3 px-4">Sesi</th>
+                                    <th class="py-3 px-4">Waktu</th>
+                                    <th class="py-3 px-4">Target Dosis</th>
+                                    <th class="py-3 px-4">Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="divide-y divide-slate-100">
+
+                                <!-- Jadwal 1 -->
+                                <tr class="hover:bg-slate-50/80 transition">
+                                    <td class="py-3.5 px-4 font-bold text-slate-800">
+                                        Sesi 1 (Pagi)
+                                    </td>
+                                    <td class="py-3.5 px-4 font-medium text-slate-700">
+                                        08:00 WIB
+                                    </td>
+                                    <td class="py-3.5 px-4 font-semibold text-blue-900">
+                                        750 g
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">
+                                            Selesai
+                                        </span>
+                                    </td>
+                                </tr>
+
+                                <!-- Jadwal 2 -->
+                                <tr class="hover:bg-slate-50/80 transition">
+                                    <td class="py-3.5 px-4 font-bold text-slate-800">
+                                        Sesi 2 (Siang)
+                                    </td>
+                                    <td class="py-3.5 px-4 font-medium text-slate-700">
+                                        12:30 WIB
+                                    </td>
+                                    <td class="py-3.5 px-4 font-semibold text-blue-900">
+                                        750 g
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">
+                                            Selesai
+                                        </span>
+                                    </td>
+                                </tr>
+
+                                <!-- Jadwal 3 -->
+                                <tr class="hover:bg-slate-50/80 transition">
+                                    <td class="py-3.5 px-4 font-bold text-slate-800">
+                                        Sesi 3 (Sore)
+                                    </td>
+                                    <td class="py-3.5 px-4 font-medium text-slate-700">
+                                        16:00 WIB
+                                    </td>
+                                    <td class="py-3.5 px-4 font-semibold text-blue-900">
+                                        750 g
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-600 border border-amber-200">
+                                            Mendatang
+                                        </span>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Kolom Kanan: Notifikasi -->
@@ -263,6 +455,16 @@
                         </p>
                         <p class="text-xs text-slate-600 mt-1">
                             Periksa kualitas sirkulasi air kolam.
+                        </p>
+                    </div>
+
+                    <!-- Notifikasi Stok Pakan -->
+                    <div class="border-b border-slate-100 pb-3">
+                        <p class="font-semibold text-emerald-600">
+                            Stok Pakan
+                        </p>
+                        <p class="text-xs text-slate-600 mt-1">
+                            Stok pakan saat ini sekitar 7.8 kg dan masih mencukupi.
                         </p>
                     </div>
                 </div>
