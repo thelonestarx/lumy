@@ -7,6 +7,29 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## About This Project
+**SIMONAT (Sistem Monitoring Kualitas Air dan Otomatisasi Pakan pada Kolam Budidaya Ikan Air Tawar)** merupakan proyek yang dikembangkan untuk mendukung pemantauan kualitas air dan otomatisasi pemberian pakan pada kolam budidaya ikan air tawar dengan memanfaatkan teknologi Internet of Things (IoT).
+
+Proyek ini bertujuan untuk membantu memantau kondisi kolam serta mendukung kegiatan budidaya ikan yang lebih efisien melalui sistem pemantauan terintegrasi dan fitur pemberian pakan otomatis. Proyek ini merupakan implementasi dari mata kuliah Proyek Sistem IoT berupa Project Based Learning di Semester 5. Proyek ini nantinya akan dipersembahkan kepada mitra kami yaitu Agribusiness and Technology Park (ATP) IPB
+
+## Our Team
+
+Kami adalah tim pengembang **SIMONAT (Sistem Monitoring Kualitas Air dan Otomatisasi Pakan pada Kolam Budidaya Ikan Air Tawar)** yang terdiri dari sembilan anggota dengan peran dan tanggung jawab masing-masing. Bersama-sama, kami berkolaborasi dalam mengembangkan sistem berbasis Internet of Things (IoT) untuk mendukung pemantauan kualitas air dan otomatisasi pemberian pakan pada kolam budidaya ikan air tawar.
+
+### Meet Our Team
+
+- **Muhammad Alfi** — Project Manager
+- **Siti Syafa L.** — Software Engineer
+- **Laras Rahmawati S.** — Hardware IoT
+- **Tahra Aulia** — Hardware IoT
+- **Dini Eka Rahmawati** — Hardware IoT
+- **Siti Lativa Irmiyati** — Secretary/Documentation
+- **Lukiman Hakim** — Hardware IoT
+- **Ahmad Jawawi** — Secretary/Documentation
+- **Alvin Tegar Pangestu** — Software Engineer
+
+Kami percaya bahwa kolaborasi, komunikasi, dan kerja sama tim merupakan kunci dalam mewujudkan SIMONAT sebagai solusi teknologi untuk mendukung budidaya ikan air tawar.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
