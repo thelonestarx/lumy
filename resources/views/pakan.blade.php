@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMONAT - Manajemen & Penjadwalan Pakan</title>
+    <title>SIMONAT - Manajemen Penjadwalan Pakan</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -19,7 +19,7 @@
     sidebarOpen: true,
     // Form Parameter Ikan & Calculation Logic
     jumlahIkan: 500,
-    jenisIkan: 'Nila',
+    jenisIkan: 'nila_hitam',
     fasePertumbuhan: 'pembesaran',
     beratRataRata: 150,
     frekuensiHari: 3,
@@ -53,6 +53,49 @@
     showToast: false,
     toastMessage: '',
 
+    // Master Jadwal Sesi (Format HH:mm)
+    jadwalSesi: {
+        1: '07:00',
+        2: '12:00',
+        3: '16:00',
+        4: '20:00'
+    },
+
+    // Menghitung selisih jam laptop dengan jadwal web
+    getHitungMundur(sesiNum) {
+        const targetTimeStr = this.jadwalSesi[sesiNum];
+        if (!targetTimeStr) return '';
+
+        const now = new Date();
+        const [hours, minutes] = targetTimeStr.split(':').map(Number);
+        
+        const target = new Date();
+        target.setHours(hours, minutes, 0, 0);
+
+        const diffMs = target - now;
+
+        if (diffMs <= 0) {
+            return 'Jadwal sudah lewat / sedang berlangsung';
+        }
+
+        const diffMinutes = Math.floor(diffMs / (1000 * 60));
+        const jam = Math.floor(diffMinutes / 60);
+        const menit = diffMinutes % 60;
+
+        if (jam > 0) {
+            return `${jam} jam ${menit} menit lagi`;
+        }
+        return `${menit} menit lagi`;
+    },
+
+    // Method untuk memicu Toast Status Sesi
+    tampilkanStatusJadwal(sesiNum) {
+        const sisaWaktu = this.getHitungMundur(sesiNum);
+        this.toastMessage = `Sesi ${sesiNum} masih menunggu jadwal pemberian pakan (${sisaWaktu}).`;
+        this.showToast = true;
+        setTimeout(() => { this.showToast = false; }, 4000);
+    },
+
     triggerFeedNow() {
         this.isDispensing = true;
         setTimeout(() => {
@@ -63,12 +106,23 @@
         }, 2500);
     },
 
-    saveThresholds() {
-        this.toastMessage = 'Konfigurasi threshold pakan berhasil disimpan dan disinkronkan ke ESP32!';
+    saveFeedingConfig() {
+        this.toastMessage = 'Data pemberian pakan berhasil disimpan dan disinkronkan ke ESP32!';
         this.showToast = true;
         setTimeout(() => { this.showToast = false; }, 4000);
     }
 }" class="bg-slate-100 flex h-screen font-sans antialiased">
+
+    <!-- Contoh Tombol Pemanggilan di HTML -->
+    <!--
+    <button 
+        x-show="sesi >= 3" 
+        @click="tampilkanStatusJadwal(sesi)" 
+        class="px-3 py-1.5 inline-flex items-center justify-center rounded-lg bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 transition text-xs font-semibold" 
+        title="Lihat status jadwal">
+        Lihat
+    </button>
+    -->
 
     <!-- Toast Notification Banner -->
     <div x-show="showToast"
@@ -184,79 +238,124 @@
         <!-- Page Title -->
         <div class="mb-6">
             <h2 class="text-2xl font-bold text-slate-800">
-                Manajemen & Penjadwalan Pakan
+                <center> Manajemen dan Penjadwalan Pakan </center>
             </h2>
-            <p class="text-slate-500 text-sm">
-                Atur takaran threshold pakan presisi, stok pakan, dan kontrol pemberian pakan manual maupun otomatis.
-            </p>
         </div>
 
         <!-- Section 1: Parameter & Threshold Pakan Calculation Card -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
-                <div>
-                    <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
-                        <i class="fa-solid fa-sliders text-blue-900"></i> Konfigurasi Parameter Kolam & Threshold Pakan
+            <div class="flex items-center justify-center border-b border-slate-100 pb-4 mb-5 text-center w-full">
+                <div class="w-full flex flex-col items-center justify-center">
+                    <h3 class="font-bold text-slate-800 text-lg flex items-center justify-center gap-2">
+                        Manajemen Pemberian Pakan
                     </h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Ubah jumlah atau jenis ikan untuk menyesuaikan pakan dengan kebiasaan pemberian pakan manual Anda.</p>
+                    <p class="text-xs text-slate-500 mt-0.5 text-center">Sesuaikan manajemen pemberian pakan sesuai kondisi ikan pada kolam budidaya.</p>
                 </div>
-                <span class="bg-blue-50 text-blue-900 text-xs font-semibold px-3 py-1.5 rounded-lg border border-blue-200">
-                    <i class="fa-solid fa-scale-balanced mr-1"></i> Threshold Presisi
-                </span>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
                 <!-- Input Controls -->
                 <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+
                     <!-- Jumlah Ikan -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Jumlah Ikan (Ekor)</label>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Jumlah Ikan pada kolam</label>
                         <div class="relative">
-                            <input type="number" x-model.number="jumlahIkan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            <input type="number"
+                                min="1"
+                                x-model.number="jumlahIkan"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <span class="absolute right-3 top-2.5 text-xs text-slate-400 font-medium">ekor</span>
                         </div>
-                        <p class="text-[11px] text-slate-400 mt-1">Dapat disesuaikan jika ada perubahan populasi ikan.</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Masukkan jumlah ikan yang ada di kolam</p>
                     </div>
 
                     <!-- Jenis Ikan -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Jenis Ikan</label>
-                        <select x-model="jenisIkan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
-                            <option value="Nila">Ikan Nila (FR: 3%)</option>
-                            <option value="Lele">Ikan Lele (FR: 4%)</option>
-                            <option value="Gurame">Ikan Gurame (FR: 2.5%)</option>
-                            <option value="Emas">Ikan Mas (FR: 3%)</option>
+                        <select x-model="jenisIkan"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            <option value="nila_hitam">Ikan Nila Hitam</option>
+                            <option value="nila_merah">Ikan Nila Merah</option>
                         </select>
-                        <p class="text-[11px] text-slate-400 mt-1">Sesuai kebutuhan pakan jenis ikan terpilih.</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Jenis ikan yang dibudidaya.</p>
                     </div>
 
-                    <!-- Fase Pertumbuhan -->
+                    <!-- Tahap Pertumbuhan -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Fase Pertumbuhan</label>
-                        <select x-model="fasePertumbuhan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
-                            <option value="benih">Benih / Larva (FR 5%)</option>
-                            <option value="pembesaran">Pembesaran (FR 3%)</option>
-                            <option value="panen">Siap Panen (FR 2%)</option>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Tahap Pertumbuhan Ikan</label>
+                        <select x-model="fasePertumbuhan"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            <option value="benih">Benih</option>
+                            <option value="pembesaran">Pembesaran</option>
                         </select>
-                        <p class="text-[11px] text-slate-400 mt-1">Mengatur Feeding Rate (FR) % dari biomassa.</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Pilih tahap pertumbuhan ikan saat ini</p>
                     </div>
 
                     <!-- Rata-rata Berat Ikan -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Rata-rata Berat Ikan (Gram)</label>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Rata-rata Berat Ikan di kolam</label>
                         <div class="relative">
-                            <input type="number" x-model.number="beratRataRata" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            <input type="number"
+                                min="1"
+                                x-model.number="beratRataRata"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <span class="absolute right-3 top-2.5 text-xs text-slate-400 font-medium">gram/ekor</span>
                         </div>
-                        <p class="text-[11px] text-slate-400 mt-1">Hasil sampling timbang ikan berkala.</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Masukkan berat rata-rata ikan berdasarkan hasil penimbangan sampel.</p>
                     </div>
+
+                    <!-- Frekuensi Pemberian Pakan -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">
+                            Frekuensi Pemberian Pakan
+                        </label>
+
+                        <select
+                            x-model.number="frekuensiHari"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            <option value="1">1 kali sehari</option>
+                            <option value="2">2 kali sehari</option>
+                            <option value="3">3 kali sehari</option>
+                            <option value="4">4 kali sehari</option>
+                        </select>
+
+                        <p class="text-[11px] text-slate-400 mt-1">
+                            Pilih berapa kali pakan diberikan dalam sehari.
+                        </p>
+                    </div>
+
+                    <!-- Pilih Device -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">
+                            Pilih Device
+                        </label>
+
+                        <select
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            <option>Device 001 - SIMONAT</option>
+                        </select>
+
+                        <p class="text-[11px] text-slate-400 mt-1">
+                            Pilih device yang terhubung dengan kolam budidaya.
+                        </p>
+                    </div>
+
                 </div>
 
                 <!-- Calculated Summary Box -->
                 <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-4 flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-bold text-blue-900 uppercase tracking-wide">Hasil Ambang Batas (Threshold)</span>
+                            <div>
+                                <span class="text-xs font-bold text-blue-900 uppercase tracking-wide">
+                                    Rekomendasi Pemberian Pakan
+                                </span>
+                                <p class="text-[11px] text-slate-400 mt-1">
+                                    Rekomendasi berdasarkan data ikan yang anda masukkan
+                                </p>
+                            </div>
                             <i class="fa-solid fa-calculator text-blue-900"></i>
                         </div>
 
@@ -265,19 +364,35 @@
                                 <span>Estimasi Total Biomassa:</span>
                                 <span class="font-bold text-slate-800" x-text="totalBiomassKg + ' kg'"></span>
                             </div>
+
                             <div class="flex justify-between items-center text-xs text-slate-600">
                                 <span>Rekomendasi Pakan Harian:</span>
                                 <span class="font-bold text-emerald-600" x-text="targetHarianGram + ' gram/hari'"></span>
                             </div>
+
                             <div class="border-t border-slate-200 pt-2 flex justify-between items-center">
-                                <span class="text-xs font-bold text-slate-800">Dosis per Sesi (3x Sehari):</span>
-                                <span class="text-base font-extrabold text-blue-900" x-text="targetPorsiGram + ' gram'"></span>
+                                <span class="text-xs font-bold text-slate-800">
+                                    Pakan per Pemberian:
+                                </span>
+                                <span
+                                    class="text-base font-extrabold text-blue-900"
+                                    x-text="targetPorsiGram + ' gram'">
+                                </span>
+                            </div>
+
+                            <div class="flex justify-between items-center text-xs text-slate-600">
+                                <span>Frekuensi Pemberian:</span>
+                                <span
+                                    class="font-bold text-slate-800"
+                                    x-text="frekuensiHari + ' kali sehari'">
+                                </span>
                             </div>
                         </div>
                     </div>
 
-                    <button @click="saveThresholds()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-floppy-disk"></i> Simpan
+                    <button @click="saveFeedingConfig()"
+                        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-floppy-disk"></i> Simpan Data
                     </button>
                 </div>
             </div>
@@ -358,12 +473,6 @@
 
                     </div>
                 </div>
-
-                <!-- Info Banner -->
-                <div class="mt-4 p-3 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-600 flex items-center gap-2">
-                    <i class="fa-solid fa-microchip text-blue-900 text-sm"></i>
-                    <span>Timbangan Load Cell akan menimbang dosis pakan secara presisi saat servo terbuka sebelum dilontarkan.</span>
-                </div>
             </div>
 
         </div>
@@ -378,9 +487,6 @@
                         <h3 class="font-bold text-slate-800 text-lg">Jadwal Pemberian Pakan Harian</h3>
                         <p class="text-xs text-slate-500">Eksekusi servo & timbangan load cell secara otomatis.</p>
                     </div>
-                    <button class="px-3 py-1.5 bg-blue-50 text-blue-900 border border-blue-200 hover:bg-blue-100 rounded-lg text-xs font-semibold transition flex items-center gap-1">
-                        <i class="fa-solid fa-plus"></i> Tambah Sesi
-                    </button>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -395,45 +501,87 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
-                            <!-- Row 1 -->
-                            <tr class="hover:bg-slate-50/80 transition">
-                                <td class="py-3.5 px-4 font-bold text-slate-800">Sesi 1 (Pagi)</td>
-                                <td class="py-3.5 px-4 font-medium text-slate-700">08:00 WIB</td>
-                                <td class="py-3.5 px-4 font-semibold text-blue-900" x-text="targetPorsiGram + ' g'"></td>
-                                <td class="py-3.5 px-4">
-                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">Selesai</span>
-                                </td>
-                                <td class="py-3.5 px-4 text-center">
-                                    <button title="Edit Schedule" class="text-slate-400 hover:text-blue-900 mr-2"><i class="fa-solid fa-pen-to-square"></i></button>
-                                    <button title="Delete" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash-can"></i></button>
-                                </td>
-                            </tr>
-                            <!-- Row 2 -->
-                            <tr class="hover:bg-slate-50/80 transition">
-                                <td class="py-3.5 px-4 font-bold text-slate-800">Sesi 2 (Siang)</td>
-                                <td class="py-3.5 px-4 font-medium text-slate-700">12:30 WIB</td>
-                                <td class="py-3.5 px-4 font-semibold text-blue-900" x-text="targetPorsiGram + ' g'"></td>
-                                <td class="py-3.5 px-4">
-                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">Selesai</span>
-                                </td>
-                                <td class="py-3.5 px-4 text-center">
-                                    <button title="Edit Schedule" class="text-slate-400 hover:text-blue-900 mr-2"><i class="fa-solid fa-pen-to-square"></i></button>
-                                    <button title="Delete" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash-can"></i></button>
-                                </td>
-                            </tr>
-                            <!-- Row 3 -->
-                            <tr class="hover:bg-slate-50/80 transition">
-                                <td class="py-3.5 px-4 font-bold text-slate-800">Sesi 3 (Sore)</td>
-                                <td class="py-3.5 px-4 font-medium text-slate-700">16:00 WIB</td>
-                                <td class="py-3.5 px-4 font-semibold text-blue-900" x-text="targetPorsiGram + ' g'"></td>
-                                <td class="py-3.5 px-4">
-                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-600 border border-amber-200">Mendatang</span>
-                                </td>
-                                <td class="py-3.5 px-4 text-center">
-                                    <button title="Edit Schedule" class="text-slate-400 hover:text-blue-900 mr-2"><i class="fa-solid fa-pen-to-square"></i></button>
-                                    <button title="Delete" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash-can"></i></button>
-                                </td>
-                            </tr>
+
+                            <template x-for="sesi in frekuensiHari" :key="sesi">
+                                <tr class="hover:bg-slate-50/80 transition">
+
+                                    <td class="py-3.5 px-4 font-bold text-slate-800">
+                                        <span x-text="'Sesi ' + sesi"></span>
+                                    </td>
+
+                                    <td class="py-3.5 px-4 font-medium text-slate-700">
+
+                                        <span x-show="sesi === 1">
+                                            08:00 WIB
+                                        </span>
+
+                                        <span x-show="sesi === 2">
+                                            12:30 WIB
+                                        </span>
+
+                                        <span x-show="sesi === 3">
+                                            16:00 WIB
+                                        </span>
+
+                                        <span x-show="sesi === 4">
+                                            19:00 WIB
+                                        </span>
+
+                                    </td>
+
+                                    <td class="py-3.5 px-4 font-semibold text-blue-900"
+                                        x-text="targetPorsiGram + ' g'">
+                                    </td>
+
+                                    <td class="py-3.5 px-4">
+
+                                        <span
+                                            x-show="sesi < 3"
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">
+
+                                            <i class="fa-solid fa-check"></i>
+
+                                            Selesai
+
+                                        </span>
+
+                                        <span
+                                            x-show="sesi >= 3"
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-600 border border-amber-200">
+
+                                            <i class="fa-regular fa-clock"></i>
+
+                                            Mendatang
+
+                                        </span>
+
+                                    </td>
+
+                                    <td class="py-3.5 px-4 text-center">
+
+                                        <button
+                                            x-show="sesi < 3"
+                                            @click="toastMessage = 'Sesi ' + sesi + ' telah dikonfirmasi selesai!'; showToast = true; setTimeout(() => { showToast = false; }, 3000)"
+                                            class="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 transition"
+                                            title="Konfirmasi pemberian pakan selesai">
+
+                                            <i class="fa-solid fa-circle-check"></i>
+
+                                        </button>
+
+                                        <button
+                                            x-show="sesi >= 3"
+                                            @click="tampilkanStatusJadwal(sesi)"
+                                            class="px-3 py-1.5 inline-flex items-center justify-center rounded-lg bg-emerald-50 text-emerald-500 hover:bg-emerald-100 hover:text-emerald-600 transition text-xs font-semibold"
+                                            title="Lihat status jadwal">
+                                            Lihat
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+                            </template>
+
                         </tbody>
                     </table>
                 </div>
