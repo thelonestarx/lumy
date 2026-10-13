@@ -10,17 +10,32 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- Chart.js untuk Grafik Interaktif -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
 
-<body x-data="{ sidebarOpen: true }" class="bg-slate-100 flex h-screen font-sans">
+<body x-data="{ sidebarOpen: window.innerWidth >= 768 }"
+    class="bg-slate-100 h-screen flex font-sans antialiased overflow-x-hidden">
 
-    <!-- Sidebar Kiri -->
-    <aside :class="sidebarOpen ? 'w-64 p-6' : 'w-20 p-4'" class="bg-blue-900 text-white flex flex-col justify-between transition-all duration-300 ease-in-out shrink-0">
+    <!-- Backdrop gelap untuk sidebar di HP (klik untuk menutup) -->
+    <div x-show="sidebarOpen"
+        @click="sidebarOpen = false"
+        x-transition.opacity
+        class="fixed inset-0 z-30 bg-slate-900/50 md:hidden"
+        x-cloak></div>
+
+    <!-- Sidebar Kiri: overlay di HP, menempel di kiri pada laptop -->
+    <aside
+        :class="sidebarOpen
+            ? 'translate-x-0 w-64 p-6'
+            : '-translate-x-full w-64 p-6 md:translate-x-0 md:w-20 md:p-4'"
+        class="fixed inset-y-0 left-0 z-40 md:static md:z-auto bg-blue-900 text-white flex flex-col justify-between transition-all duration-300 ease-in-out shrink-0 overflow-hidden overflow-y-auto">
         <div>
 
             <!-- Logo & Nama Aplikasi -->
             <div class="flex items-center gap-3 mb-10 overflow-hidden whitespace-nowrap">
-                <img src="{{ asset('img/logo-putih.png') }}" alt="Logo SIMONAT" class="w-9 h-9 object-contain">
+                <img src="{{ asset('img/logo-putih.png') }}" alt="Logo SIMONAT" class="w-9 h-9 object-contain shrink-0">
 
                 <h1 x-show="sidebarOpen" x-transition.opacity class="text-2xl font-bold tracking-wider">
                     SIMONAT
@@ -85,10 +100,10 @@
     </aside>
 
     <!-- Konten Utama -->
-    <main class="flex-1 p-8 overflow-y-auto">
+    <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
 
         <!-- Header -->
-        <header class="flex justify-between items-center mb-6">
+        <header class="flex justify-between items-center gap-3 mb-6">
 
             <button @click="sidebarOpen = !sidebarOpen"
                 class="text-2xl text-slate-600 hover:text-blue-900 focus:outline-none transition">
@@ -101,11 +116,12 @@
                 <button @click="open = !open"
                     class="flex items-center gap-3 focus:outline-none hover:opacity-80 transition">
 
-                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-900 font-bold">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-900 font-bold shrink-0">
                         <i class="fa-solid fa-user"></i>
                     </div>
 
-                    <div class="text-left">
+                    <!-- Nama & peran disembunyikan di layar sangat kecil -->
+                    <div class="text-left hidden sm:block">
                         <p class="font-bold text-sm leading-tight text-slate-800">
                             Gemilang
                         </p>
@@ -120,7 +136,14 @@
 
                 <div x-show="open"
                     @click.outside="open = false"
+                    x-cloak
                     class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-2 z-50">
+
+                    <!-- Info profil muncul di dropdown khusus HP -->
+                    <div class="sm:hidden px-4 py-2 border-b border-slate-100 mb-1">
+                        <p class="font-bold text-sm text-slate-800">Gemilang</p>
+                        <p class="text-xs text-slate-500">Pembudidaya</p>
+                    </div>
 
                     <a href="#"
                         class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
@@ -150,11 +173,11 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
 
             <div>
-                <h2 class="text-2xl font-bold text-slate-800">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-800">
                     Monitoring Kualitas Air (Real-Time)
                 </h2>
 
-                <p class="text-slate-500 mt-1">
+                <p class="text-slate-500 text-sm sm:text-base mt-1">
                     Pantau kondisi grafik parametrik air kolam budidaya secara berkala.
                 </p>
             </div>
@@ -162,7 +185,7 @@
             <!-- Live Status Indicator -->
             <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-semibold w-fit">
 
-                <span class="relative flex h-2.5 w-2.5">
+                <span class="relative flex h-2.5 w-2.5 shrink-0">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
@@ -174,12 +197,12 @@
 
 
         <!-- Card Parameter Air -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6">
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 mb-4 sm:mb-6">
 
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-3 mb-4">
 
                 <div>
-                    <h3 class="font-bold text-slate-800 text-lg">
+                    <h3 class="font-bold text-slate-800 text-base sm:text-lg">
                         Kondisi Air Kolam
                     </h3>
 
@@ -188,14 +211,14 @@
                     </p>
                 </div>
 
-                <span class="text-xs text-slate-400">
+                <span class="text-xs text-slate-400 shrink-0">
                     Update terakhir: 13:00 WIB
                 </span>
 
             </div>
 
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
                 <!-- Card 1: Suhu -->
                 <div class="bg-slate-50/80 border border-slate-200/60 rounded-xl p-4 flex flex-col justify-between hover:border-blue-200 hover:shadow-sm transition">
@@ -306,12 +329,12 @@
 
 
         <!-- Section Grafik Utama -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6">
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 mb-4 sm:mb-6">
 
-            <div class="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-4">
+            <div class="flex flex-col xl:flex-row xl:justify-between xl:items-center mb-6 gap-4">
 
                 <div>
-                    <h3 class="font-bold text-slate-800 text-lg">
+                    <h3 class="font-bold text-slate-800 text-base sm:text-lg">
                         Grafik Tren Parameter Air
                     </h3>
 
@@ -322,9 +345,9 @@
 
 
                 <!-- Filter Parameter & Filter Waktu -->
-                <div class="flex items-center gap-3">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-3 w-full xl:w-auto">
 
-                    <select class="border border-slate-200 rounded-lg text-sm px-3 py-1.5 text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                    <select class="w-full sm:w-auto border border-slate-200 rounded-lg text-sm px-3 py-1.5 text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
 
                         <option>Semua Parameter</option>
                         <option>Suhu (°C)</option>
@@ -334,17 +357,17 @@
                     </select>
 
 
-                    <div class="flex bg-slate-100 p-1 rounded-lg text-xs font-semibold text-slate-600">
+                    <div class="flex w-full sm:w-auto bg-slate-100 p-1 rounded-lg text-xs font-semibold text-slate-600">
 
-                        <button class="px-3 py-1 rounded-md bg-white shadow-sm text-blue-900">
+                        <button class="flex-1 sm:flex-none px-3 py-1 rounded-md bg-white shadow-sm text-blue-900 whitespace-nowrap">
                             1 Hari
                         </button>
 
-                        <button class="px-3 py-1 rounded-md hover:text-slate-900">
+                        <button class="flex-1 sm:flex-none px-3 py-1 rounded-md hover:text-slate-900 whitespace-nowrap">
                             1 Minggu
                         </button>
 
-                        <button class="px-3 py-1 rounded-md hover:text-slate-900">
+                        <button class="flex-1 sm:flex-none px-3 py-1 rounded-md hover:text-slate-900 whitespace-nowrap">
                             1 Bulan
                         </button>
 
@@ -355,7 +378,7 @@
 
 
             <!-- Canvas Grafik -->
-            <div class="h-80 w-full">
+            <div class="h-64 sm:h-80 w-full relative">
                 <canvas id="monitoringChart"></canvas>
             </div>
 
@@ -363,12 +386,12 @@
 
 
         <!-- Tabel Riwayat Data Log Sensor -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100">
 
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
 
                 <div>
-                    <h3 class="font-bold text-slate-800 text-lg">
+                    <h3 class="font-bold text-slate-800 text-base sm:text-lg">
                         Riwayat Pembacaan Sensor
                     </h3>
 
@@ -377,7 +400,7 @@
                     </p>
                 </div>
 
-                <button class="text-xs font-semibold text-blue-900 hover:underline flex items-center gap-1">
+                <button class="text-xs font-semibold text-blue-900 hover:underline flex items-center gap-1 w-fit">
                     <i class="fa-solid fa-download"></i>
                     Unduh Data Log
                 </button>
@@ -385,9 +408,10 @@
             </div>
 
 
+            <!-- Tabel bisa digeser horizontal di HP -->
             <div class="overflow-x-auto">
 
-                <table class="w-full text-left text-sm text-slate-600">
+                <table class="w-full text-left text-sm text-slate-600 min-w-[600px]">
 
                     <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-semibold border-b border-slate-100">
 
@@ -424,11 +448,11 @@
 
                         <tr class="hover:bg-slate-50/80 transition">
 
-                            <td class="py-3 px-4 font-medium text-slate-800">
+                            <td class="py-3 px-4 font-medium text-slate-800 whitespace-nowrap">
                                 {{ $log['time'] }}
                             </td>
 
-                            <td class="py-3 px-4">
+                            <td class="py-3 px-4 whitespace-nowrap">
                                 {{ $log['suhu'] }} °C
                             </td>
 
@@ -436,7 +460,7 @@
                                 {{ $log['ph'] }}
                             </td>
 
-                            <td class="py-3 px-4">
+                            <td class="py-3 px-4 whitespace-nowrap">
                                 {{ $log['turbidity'] }} NTU
                             </td>
 

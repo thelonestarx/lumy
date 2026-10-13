@@ -10,16 +10,31 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- Chart.js Tambahan untuk merender grafik -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
 
-<body x-data="{ sidebarOpen: true }" class="bg-slate-100 flex h-screen font-sans">
+<body x-data="{ sidebarOpen: window.innerWidth >= 768 }"
+    class="bg-slate-100 h-screen flex font-sans antialiased overflow-x-hidden">
 
-    <!-- Sidebar Kiri -->
-    <aside :class="sidebarOpen ? 'w-64 p-6' : 'w-20 p-4'" class="bg-blue-900 text-white flex flex-col justify-between transition-all duration-300 ease-in-out shrink-0">
+    <!-- Backdrop gelap untuk sidebar di HP (klik untuk menutup) -->
+    <div x-show="sidebarOpen"
+        @click="sidebarOpen = false"
+        x-transition.opacity
+        class="fixed inset-0 z-30 bg-slate-900/50 md:hidden"
+        x-cloak></div>
+
+    <!-- Sidebar Kiri: overlay di HP, menempel di kiri pada laptop -->
+    <aside
+        :class="sidebarOpen
+            ? 'translate-x-0 w-64 p-6'
+            : '-translate-x-full w-64 p-6 md:translate-x-0 md:w-20 md:p-4'"
+        class="fixed inset-y-0 left-0 z-40 md:static md:z-auto bg-blue-900 text-white flex flex-col justify-between transition-all duration-300 ease-in-out shrink-0 overflow-hidden overflow-y-auto">
         <div>
             <!-- Logo & Nama Aplikasi -->
             <div class="flex items-center gap-3 mb-10 overflow-hidden whitespace-nowrap">
-                <img src="{{ asset('img/logo-putih.png') }}" alt="Logo SIMONAT" class="w-9 h-9 object-contain">
+                <img src="{{ asset('img/logo-putih.png') }}" alt="Logo SIMONAT" class="w-9 h-9 object-contain shrink-0">
                 <h1 x-show="sidebarOpen" x-transition.opacity class="text-2xl font-bold tracking-wider">
                     SIMONAT
                 </h1>
@@ -73,10 +88,10 @@
     </aside>
 
     <!-- Konten Utama -->
-    <main class="flex-1 p-8 overflow-y-auto">
+    <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
 
         <!-- Header -->
-        <header class="flex justify-between items-center mb-6">
+        <header class="flex justify-between items-center gap-3 mb-6">
             <button @click="sidebarOpen = !sidebarOpen" class="text-2xl text-slate-600 hover:text-blue-900 focus:outline-none transition">
                 <i class="fa-solid fa-bars"></i>
             </button>
@@ -84,10 +99,11 @@
             <!-- Profile Dropdown -->
             <div x-data="{ open: false }" class="relative">
                 <button @click="open = !open" class="flex items-center gap-3 focus:outline-none hover:opacity-80 transition">
-                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-900 font-bold">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-900 font-bold shrink-0">
                         <i class="fa-solid fa-user"></i>
                     </div>
-                    <div class="text-left">
+                    <!-- Nama & peran disembunyikan di layar sangat kecil -->
+                    <div class="text-left hidden sm:block">
                         <p class="font-bold text-sm leading-tight text-slate-800">
                             Gemilang
                         </p>
@@ -100,6 +116,7 @@
 
                 <div x-show="open"
                     @click.outside="open = false"
+                    x-cloak
                     x-transition:enter="transition ease-out duration-100"
                     x-transition:enter-start="transform opacity-0 scale-95"
                     x-transition:enter-end="transform opacity-100 scale-100"
@@ -107,6 +124,12 @@
                     x-transition:leave-start="transform opacity-100 scale-100"
                     x-transition:leave-end="transform opacity-0 scale-95"
                     class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-2 z-50">
+
+                    <!-- Info profil muncul di dropdown khusus HP -->
+                    <div class="sm:hidden px-4 py-2 border-b border-slate-100 mb-1">
+                        <p class="font-bold text-sm text-slate-800">Gemilang</p>
+                        <p class="text-xs text-slate-500">Pembudidaya</p>
+                    </div>
 
                     <a href="#" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
                         <i class="fa-regular fa-id-badge text-slate-400"></i> Lihat Profil
@@ -125,25 +148,25 @@
         </header>
 
         <!-- Greeting -->
-        <h2 class="text-2xl font-bold text-slate-800">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-800">
             Selamat Datang, Gemilang! 👋
         </h2>
-        <p class="text-slate-500 mb-6">
+        <p class="text-slate-500 text-sm sm:text-base mb-6">
             Berikut kondisi kolam Anda saat ini.
         </p>
 
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
 
             <!-- Kolom Kiri & Tengah: Status + Grafik -->
-            <div class="xl:col-span-2 space-y-6">
+            <div class="xl:col-span-2 min-w-0 space-y-4 sm:space-y-6">
 
                 <!-- Status Parameter Air -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <h3 class="font-bold text-slate-800 text-lg mb-4">
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-slate-800 text-base sm:text-lg mb-4">
                         Kondisi Air Kolam
                     </h3>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
                         <!-- Card 1: Suhu -->
                         <div class="bg-slate-50/80 border border-slate-200/60 rounded-xl p-4 flex flex-col justify-between hover:border-blue-200 transition">
@@ -212,29 +235,29 @@
                 </div>
 
                 <!-- Grafik Air Kolam Dashboard -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-slate-800 text-lg">
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+                        <h3 class="font-bold text-slate-800 text-base sm:text-lg">
                             Grafik Kondisi Air Kolam
                         </h3>
-                        <select class="border border-slate-200 rounded-lg text-sm px-3 py-1.5 text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                        <select class="w-full sm:w-auto border border-slate-200 rounded-lg text-sm px-3 py-1.5 text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                             <option>Hari</option>
                             <option>Bulan</option>
                             <option>Tahun</option>
                         </select>
                     </div>
 
-                    <!-- Tempat Menggambar Grafik (Menggantikan Area Grafik sebelumnya) -->
-                    <div class="h-64 w-full">
+                    <!-- Tempat Menggambar Grafik -->
+                    <div class="h-64 w-full relative">
                         <canvas id="dashboardChart"></canvas>
                     </div>
                 </div>
 
                 <!-- Ringkasan Pakan Dashboard -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-4">
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-3 mb-4">
                         <div>
-                            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                            <h3 class="font-bold text-slate-800 text-base sm:text-lg flex items-center gap-2">
                                 <i class="fa-solid fa-fish text-blue-900"></i>
                                 Ringkasan Pakan
                             </h3>
@@ -244,13 +267,13 @@
                         </div>
 
                         <a href="{{ route('pakan') }}"
-                            class="text-xs font-semibold text-blue-900 hover:text-blue-700 flex items-center gap-1">
+                            class="text-xs font-semibold text-blue-900 hover:text-blue-700 flex items-center gap-1 w-fit shrink-0">
                             Lihat Detail
                             <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
                         <!-- Stok Pakan -->
                         <div class="bg-slate-50/80 border border-slate-200/60 rounded-xl p-4">
@@ -331,10 +354,10 @@
                 </div>
 
                 <!-- Jadwal Pakan Hari Ini -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-4">
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-3 mb-4">
                         <div>
-                            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                            <h3 class="font-bold text-slate-800 text-base sm:text-lg flex items-center gap-2">
                                 <i class="fa-regular fa-clock text-blue-900"></i>
                                 Jadwal Pakan Hari Ini
                             </h3>
@@ -344,14 +367,15 @@
                         </div>
 
                         <a href="{{ route('pakan') }}"
-                            class="text-xs font-semibold text-blue-900 hover:text-blue-700 flex items-center gap-1">
+                            class="text-xs font-semibold text-blue-900 hover:text-blue-700 flex items-center gap-1 w-fit shrink-0">
                             Kelola Pakan
                             <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
 
+                    <!-- Tabel bisa digeser horizontal di HP -->
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm text-slate-600">
+                        <table class="w-full text-left text-sm text-slate-600 min-w-[500px]">
                             <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-semibold border-b border-slate-100">
                                 <tr>
                                     <th class="py-3 px-4">Sesi</th>
@@ -365,13 +389,13 @@
 
                                 <!-- Jadwal 1 -->
                                 <tr class="hover:bg-slate-50/80 transition">
-                                    <td class="py-3.5 px-4 font-bold text-slate-800">
+                                    <td class="py-3.5 px-4 font-bold text-slate-800 whitespace-nowrap">
                                         Sesi 1 (Pagi)
                                     </td>
-                                    <td class="py-3.5 px-4 font-medium text-slate-700">
+                                    <td class="py-3.5 px-4 font-medium text-slate-700 whitespace-nowrap">
                                         08:00 WIB
                                     </td>
-                                    <td class="py-3.5 px-4 font-semibold text-blue-900">
+                                    <td class="py-3.5 px-4 font-semibold text-blue-900 whitespace-nowrap">
                                         750 g
                                     </td>
                                     <td class="py-3.5 px-4">
@@ -383,13 +407,13 @@
 
                                 <!-- Jadwal 2 -->
                                 <tr class="hover:bg-slate-50/80 transition">
-                                    <td class="py-3.5 px-4 font-bold text-slate-800">
+                                    <td class="py-3.5 px-4 font-bold text-slate-800 whitespace-nowrap">
                                         Sesi 2 (Siang)
                                     </td>
-                                    <td class="py-3.5 px-4 font-medium text-slate-700">
+                                    <td class="py-3.5 px-4 font-medium text-slate-700 whitespace-nowrap">
                                         12:30 WIB
                                     </td>
-                                    <td class="py-3.5 px-4 font-semibold text-blue-900">
+                                    <td class="py-3.5 px-4 font-semibold text-blue-900 whitespace-nowrap">
                                         750 g
                                     </td>
                                     <td class="py-3.5 px-4">
@@ -401,13 +425,13 @@
 
                                 <!-- Jadwal 3 -->
                                 <tr class="hover:bg-slate-50/80 transition">
-                                    <td class="py-3.5 px-4 font-bold text-slate-800">
+                                    <td class="py-3.5 px-4 font-bold text-slate-800 whitespace-nowrap">
                                         Sesi 3 (Sore)
                                     </td>
-                                    <td class="py-3.5 px-4 font-medium text-slate-700">
+                                    <td class="py-3.5 px-4 font-medium text-slate-700 whitespace-nowrap">
                                         16:00 WIB
                                     </td>
-                                    <td class="py-3.5 px-4 font-semibold text-blue-900">
+                                    <td class="py-3.5 px-4 font-semibold text-blue-900 whitespace-nowrap">
                                         750 g
                                     </td>
                                     <td class="py-3.5 px-4">
@@ -425,8 +449,8 @@
             </div>
 
             <!-- Kolom Kanan: Notifikasi -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-fit">
-                <h3 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
+            <div class="min-w-0 bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 h-fit">
+                <h3 class="font-bold text-slate-800 text-base sm:text-lg mb-4 flex items-center gap-2">
                     <i class="fa-regular fa-bell text-blue-900"></i> Notifikasi Terbaru
                 </h3>
 
