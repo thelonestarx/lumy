@@ -1,11 +1,4 @@
 
-===================================================
-   ====   ====  ====   ====   ====   ====    ==== 
-  ==       ==   == == == ==  ==  ==  == ==    ==  
-   ====    ==   ==  ===  ==  ==  ==  ==  ==   ==  
-      ==   ==   ==       ==  ==  ==  ==   ==  ==  
-   ====   ====  ==       ==   ====   ==    == ==  
-===================================================
 
 ## About This Project
 **SIMONAT (Sistem Monitoring Kualitas Air dan Otomatisasi Pakan pada Kolam Budidaya Ikan Air Tawar)** merupakan proyek yang dikembangkan untuk mendukung pemantauan kualitas air dan otomatisasi pemberian pakan pada kolam budidaya ikan air tawar dengan memanfaatkan teknologi Internet of Things (IoT).
